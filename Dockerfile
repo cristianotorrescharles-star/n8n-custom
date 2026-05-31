@@ -2,7 +2,7 @@ FROM n8nio/n8n:latest
 
 USER root
 
-# Instalar Python e dependências necessárias para Playwright
+# Instalar Python e todas as dependências necessárias para Playwright
 RUN apt-get update && apt-get install -y \
     python3 \
     python3-pip \
@@ -25,6 +25,9 @@ RUN apt-get update && apt-get install -y \
     libpango-1.0-0 \
     libcairo2 \
     fonts-liberation \
+    libdrm2 \
+    libxshmfence1 \
+    libxkbcommon0 \
     && rm -rf /var/lib/apt/lists/*
 
 # Atualizar pip e instalar Playwright
@@ -32,6 +35,8 @@ RUN pip3 install --upgrade pip
 RUN pip3 install playwright
 RUN playwright install --with-deps
 
-# Definir comando padrão para iniciar o n8n
+# Voltar para usuário padrão do n8n
 USER node
+
+# Definir comando padrão para iniciar o n8n
 CMD ["n8n"]
