@@ -11,6 +11,7 @@ RUN apt-get update && apt-get install -y \
     gnupg \
     ca-certificates \
     libnss3 \
+    libsm6 \
     libatk1.0-0 \
     libatk-bridge2.0-0 \
     libx11-6 \
@@ -35,8 +36,5 @@ RUN pip3 install --upgrade pip
 RUN pip3 install playwright
 RUN playwright install --with-deps
 
-# Voltar para usuário padrão do n8n
 USER node
-
-# Definir comando padrão para iniciar o n8n
 CMD ["n8n"]
