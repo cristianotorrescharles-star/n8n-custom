@@ -1,40 +1,46 @@
-FROM n8nio/n8n:latest
+# Imagem base com Python
+FROM python:3.11-slim
 
-USER root
+# Evita prompts interativos
+ENV DEBIAN_FRONTEND=noninteractive
 
-# Instalar Python e todas as dependências necessárias para Playwright
+# Instalar dependências do sistema necessárias para o Playwright
 RUN apt-get update && apt-get install -y \
-    python3 \
-    python3-pip \
-    curl \
     wget \
     gnupg \
-    ca-certificates \
+    curl \
+    unzip \
+    fonts-liberation \
     libnss3 \
-    libsm6 \
     libatk1.0-0 \
     libatk-bridge2.0-0 \
-    libx11-6 \
+    libcups2 \
+    libxkbcommon0 \
     libxcomposite1 \
-    libxdamage1 \
-    libxext6 \
-    libxfixes3 \
     libxrandr2 \
     libgbm1 \
     libasound2 \
     libpangocairo-1.0-0 \
-    libpango-1.0-0 \
-    libcairo2 \
-    fonts-liberation \
-    libdrm2 \
+    libxdamage1 \
+    libxfixes3 \
     libxshmfence1 \
-    libxkbcommon0 \
+    libpango-1.0-0 \
+    libglib2.0-0 \
+    libgtk-3-0 \
+    ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-# Atualizar pip e instalar Playwright
-RUN pip3 install --upgrade pip
-RUN pip3 install playwright
+# Diretório de trabalho
+WORKDIR /app
+
+# Copiar arquivos
+COPY . .
+
+# Instalar dependências Python
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Instalar navegadores do Playwright
 RUN playwright install --with-deps
 
-USER node
-CMD ["n8n"]
+# Comando padrão
+CMD ["python", "app.py"]
