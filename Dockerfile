@@ -1,46 +1,10 @@
-# Imagem base com Python
-FROM python:3.11-slim
+FROM mcr.microsoft.com/playwright/python:v1.44.0-jammy
 
-# Evita prompts interativos
-ENV DEBIAN_FRONTEND=noninteractive
-
-# Instalar dependências do sistema necessárias para o Playwright
-RUN apt-get update && apt-get install -y \
-    wget \
-    gnupg \
-    curl \
-    unzip \
-    fonts-liberation \
-    libnss3 \
-    libatk1.0-0 \
-    libatk-bridge2.0-0 \
-    libcups2 \
-    libxkbcommon0 \
-    libxcomposite1 \
-    libxrandr2 \
-    libgbm1 \
-    libasound2 \
-    libpangocairo-1.0-0 \
-    libxdamage1 \
-    libxfixes3 \
-    libxshmfence1 \
-    libpango-1.0-0 \
-    libglib2.0-0 \
-    libgtk-3-0 \
-    ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
-
-# Diretório de trabalho
 WORKDIR /app
 
-# Copiar arquivos
-COPY . .
+COPY ..
 
-# Instalar dependências Python
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir playwright
+RUN if [ -f requirements.txt ]; then pip install --no-cache-dir -r requirements.txt; fi
 
-# Instalar navegadores do Playwright
-RUN playwright install --with-deps
-
-# Comando padrão
 CMD ["python", "app.py"]
