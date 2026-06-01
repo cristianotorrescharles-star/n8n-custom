@@ -1,15 +1,22 @@
+from http.server import BaseHTTPRequestHandler, HTTPServer
 from playwright.sync_api import sync_playwright
-import time
 
-print("Iniciando teste...")
+PORT = 10000
 
-with sync_playwright() as p:
-    browser = p.chromium.launch(headless=True)
-    page = browser.new_page()
-    page.goto("https://example.com")
-    print("Título:", page.title())
-    browser.close()
+class Handler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        with sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            page = browser.new_page()
+            page.goto("https://example.com")
+            title = page.title()
+            browser.close()
 
-# mantém o container vivo
-while True:
-    time.sleep(60)
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(f"Título: {title}".encode())
+
+print(f"Servidor rodando na porta {PORT}...")
+
+server = HTTPServer(("0.0.0.0", PORT), Handler)
+server.serve_forever()
